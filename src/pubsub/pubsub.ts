@@ -5,19 +5,19 @@
  * https://github.com/jiwonMe/pubsub-ts
  */
 
-export default class PubSub<Store> {
+export default class PubSub<Store extends {[topic in keyof Store]: (...args: any) => any}> {
   private hooks: Map<keyof Store, any>;
 
   constructor() {
     this.hooks = new Map();
   }
 
-  sub<Topic extends keyof Store>(topic: Topic, ...hooks: Store[Topic][]) {
+  sub<Topic extends keyof Store>(topic: Topic, hook: Store[Topic]) {
     const currentHooks = this.hooks.get(topic);
     if (currentHooks !== undefined && currentHooks.length > 0) {
-      this.hooks.set(topic, [...currentHooks, ...hooks])
+      this.hooks.set(topic, [...currentHooks, hook])
     } else {
-      this.hooks.set(topic, [...hooks]);
+      this.hooks.set(topic, [hook]);
     }
   }
 
@@ -31,7 +31,6 @@ export default class PubSub<Store> {
     }
   }
 
-  // @ts-expect-error
   pub<Topic extends keyof Store>(topic: Topic, message: Parameters<Store[Topic]>) {
     const currentHooks = this.hooks.get(topic);
     if (currentHooks !== undefined && currentHooks.length > 0){

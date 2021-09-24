@@ -10,4 +10,7 @@ import TOPICS from "./constants/TOPICS";
 
 const pubsub = new PubSub<TOPICS>();
 
-pubsub.sub('test')
+const add = (a: number, b: number) => a + b;
+pubsub.sub('test', add);
+
+pubsub.sub('CMD.TEST',(id: string) => 3);
